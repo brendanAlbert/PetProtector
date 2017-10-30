@@ -22,17 +22,47 @@
 
     <ImageView
         android:id="@+id/petImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:clickable="true"
         android:onClick="selectPetImage"
         android:layout_gravity="center"
         app:srcCompat="@drawable/none" />
+
+    <EditText
+        android:id="@+id/petNameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="@string/name"/>
+
+    <EditText
+        android:id="@+id/petDetailsEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="@string/details"/>
+
+    <EditText
+        android:id="@+id/petPhoneEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="phone"
+        android:text="@string/phone_number"/>
 
     <Button
         android:id="@+id/addPetButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="@string/add_button_text" />
+        android:text="@string/add_button_text"
+        android:onClick="addPet"/>
+
+    <ListView
+        android:id="@+id/petListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </LinearLayout>

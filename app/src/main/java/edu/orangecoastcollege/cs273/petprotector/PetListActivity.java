@@ -12,11 +12,18 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static edu.orangecoastcollege.cs273.petprotector.R.id.petImageView;
 
 /**
  * PetListActivity is the main controller for the PetProtector app.
@@ -41,12 +48,23 @@ import java.util.List;
  */
 public class PetListActivity extends AppCompatActivity {
 
-    private ImageView petImageView;
+    private DBHelper db;
+    private ImageView mPetImageView;
     private Uri imageUri;
 
     // Constants for permissions:
     private static final int GRANTED = PackageManager.PERMISSION_GRANTED;
     public static final int DENIED = PackageManager.PERMISSION_DENIED;
+
+
+    // widgets for adding a pet
+    private EditText mNameEditText;
+    private EditText mDetailsEditText;
+    private EditText mPhoneEditText;
+
+    // member variables for the list view
+    private List<Pet> mPetsList;
+    private PetListAdapter mPetListAdapter;
 
     /**
      * The onCreate method sets the content view and wires up the pet Image View.
@@ -58,8 +76,26 @@ public class PetListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pet_list);
 
-        petImageView = (ImageView) findViewById(R.id.petImageView);
-        petImageView.setImageURI(getUriFromResource(this, R.drawable.none));
+        mPetImageView = (ImageView) findViewById(petImageView);
+        mPetImageView.setImageURI(getUriFromResource(this, R.drawable.none));
+
+        mNameEditText = (EditText) findViewById(R.id.petNameEditText);
+        mDetailsEditText = (EditText) findViewById(R.id.petDetailsEditText);
+        mPhoneEditText = (EditText) findViewById(R.id.petPhoneEditText);
+        ListView petsListView = (ListView) findViewById(R.id.petListView);
+
+        mNameEditText.setText("");
+        mNameEditText.setHint("Name");
+        mDetailsEditText.setText("");
+        mDetailsEditText.setHint("Pet Details");
+        mPhoneEditText.setText("");
+        mPhoneEditText.setHint("Phone Number");
+
+        db = new DBHelper(this);
+
+        mPetsList = db.getAllPets();
+        mPetListAdapter = new PetListAdapter(this, R.layout.pet_list_item, mPetsList);
+        petsListView.setAdapter(mPetListAdapter);
     }
 
     /**
@@ -145,7 +181,46 @@ public class PetListActivity extends AppCompatActivity {
         {
             // data is the data from GalleryIntent (the URI of some image)
             imageUri = data.getData();
-            petImageView.setImageURI(imageUri);
+            mPetImageView.setImageURI(imageUri);
         }
+    }
+
+    public void viewPetDetails(View view)
+    {
+        Intent petDetails = new Intent(this, PetDetailsActivity.class);
+
+        LinearLayout selectedLayout = (LinearLayout) view;
+        Pet selectedPet = (Pet) selectedLayout.getTag();
+
+        petDetails.putExtra("name", selectedPet.getName());
+        petDetails.putExtra("details", selectedPet.getDetails());
+        petDetails.putExtra("phone", selectedPet.getPhone());
+        petDetails.putExtra("image", selectedPet.getImageURI());
+
+        startActivity(petDetails);
+    }
+
+    public void addPet(View view) {
+        String name = mNameEditText.getText().toString();
+        String details = mDetailsEditText.getText().toString();
+        String phone = mPhoneEditText.getText().toString();
+
+        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(details) || TextUtils.isEmpty(phone))
+            Toast.makeText(this, "All information about the pet must be provided", Toast.LENGTH_LONG).show();
+        else
+        {
+            Pet newPet = new Pet(name, details, phone, imageUri.toString());
+            db.addPet(newPet);
+            mPetsList.add(newPet);
+        }
+
+        mPetListAdapter.notifyDataSetChanged();
+        mNameEditText.setText("");
+        mNameEditText.setHint("Name");
+        mDetailsEditText.setText("");
+        mDetailsEditText.setHint("Pet Details");
+        mPhoneEditText.setText("");
+        mPhoneEditText.setHint("Phone Number");
+        mPetImageView.setImageURI(getUriFromResource(this,R.drawable.none));
     }
 }
