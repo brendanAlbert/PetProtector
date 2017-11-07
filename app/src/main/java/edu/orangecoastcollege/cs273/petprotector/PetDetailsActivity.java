@@ -7,6 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+/**
+ * PetDetailsActivity is reached when the User taps on a particular Pet from the list
+ * in PetListActivity, the main page/activity of the Pet Protector app.
+ *
+ * The Intent which was sent is gotten and the various Views are populated with data.
+ */
 public class PetDetailsActivity extends AppCompatActivity {
 
     @Override

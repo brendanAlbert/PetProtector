@@ -101,6 +101,12 @@ public class PetListActivity extends AppCompatActivity {
     /**
      * getUriFromResource is called from onCreate to set the initial ImageView.
      *
+     * This static method is also called from addPet to set the image correctly.
+     *
+     * A URI is built from a scheme, host and a path.
+     *
+     * URI's are created dynamically
+     * so this static method is incredibly versatile.
      * @param context
      * @param resId
      * @return
@@ -124,9 +130,8 @@ public class PetListActivity extends AppCompatActivity {
      * If this is the first time, then the permissions will be requested.
      * This is performed by building a list of denied permissions.
      * Once the permissions are allowed, the onActivityResult method is called.
-     * The URI is created dynamically
-     * so this static method is incredibly versatile
-     * @param v
+
+     * @param v is the View object to be used from the Image Gallery.
      */
     public void selectPetImage(View v)
     {
@@ -185,6 +190,13 @@ public class PetListActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * viewPetDetails is called when the User taps on a particular Pet displayed in the list.
+     *
+     * An Intent is created, the Pet's details are added to the intent
+     * and it is passed to PetDetailsActivity.java via the startActivity static method call.
+     * @param view is the View object tapped on
+     */
     public void viewPetDetails(View view)
     {
         Intent petDetails = new Intent(this, PetDetailsActivity.class);
@@ -200,6 +212,13 @@ public class PetListActivity extends AppCompatActivity {
         startActivity(petDetails);
     }
 
+    /**
+     * addPet is called when the User taps the ADD PET button.
+     * A check ensures that all the fields have data before adding to the database.
+     * Then the Views are reset as a visual notification that the addition took place
+     * and to clean the slate if the User wishes to add another Pet.
+     * @param view
+     */
     public void addPet(View view) {
         String name = mNameEditText.getText().toString();
         String details = mDetailsEditText.getText().toString();
@@ -212,9 +231,9 @@ public class PetListActivity extends AppCompatActivity {
             Pet newPet = new Pet(name, details, phone, imageUri.toString());
             db.addPet(newPet);
             mPetsList.add(newPet);
+            mPetListAdapter.notifyDataSetChanged();
         }
 
-        mPetListAdapter.notifyDataSetChanged();
         mNameEditText.setText("");
         mNameEditText.setHint("Name");
         mDetailsEditText.setText("");

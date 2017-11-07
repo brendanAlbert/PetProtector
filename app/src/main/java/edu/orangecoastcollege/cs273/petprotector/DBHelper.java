@@ -10,6 +10,20 @@ import java.util.ArrayList;
 
 /**
  * Created by brendantyleralbert on 10/29/17.
+ *
+ * DBHelper is another vital part of the Model of our Pet Protector app.
+ * Since we need to persist the Pet data, we use an SQLite database.
+ *
+ * This code is practically boilerplate for whenever you want to create a database
+ * and persist data.
+ *
+ * DBHelper is an SQLiteOpenHelper.
+ *
+ * We have constants for the database information and for the table.
+ *
+ * onCreate and onUpgrade must be implemented when working with SQLIteOpenHelper.
+ * addPet and getAllPets are specific methods for our app, although most apps
+ * will probably implement these methods too.
  */
 
 public class DBHelper extends SQLiteOpenHelper {
@@ -26,9 +40,24 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String FIELD_IMAGE_URI = "uri";
 
 
-
-
+    /**
+     * DBHelper is a parameterized constructor which accepts a context argument.
+     * Inside the method, its super method is called and we pass the context,
+     * the database name,
+     * null for the cursor factory,
+     * and the database version, which is updated when onUpgrade is called.
+     * @param context
+     */
     public DBHelper(Context context) { super (context, DATABASE_NAME, null, DATABASE_VERSION); }
+
+    /**
+     * onCreate must be implemented when working with SQLiteOpenHelper.
+     *
+     * A string is constructed to represent the SQL query.
+     *
+     * The SQL query is executed via database.execSQL(the_SQL_query);
+     * @param database
+     */
     @Override
     public void onCreate(SQLiteDatabase database) {
 
@@ -42,12 +71,28 @@ public class DBHelper extends SQLiteOpenHelper {
         database.execSQL(createTable);
     }
 
+    /**
+     * onUpgrade must also be implemented with working with SQLIteOpenHelper.
+     * When the database is upgrade, the previous table is dropped and it
+     * is recreated with a call to onCreate.
+     *
+     * @param database the name of the database to work with
+     * @param oldVersion the previous version number of the db
+     * @param newVersion the new version number of the db
+     */
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
         database.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE);
         onCreate(database);
     }
 
+    /**
+     * addPet is called when we have received valid input from the User.
+     *
+     * The pet's details are acquired using a ContentValues object, we insert them into
+     * and close the database.
+     * @param pet
+     */
     public void addPet(Pet pet) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -61,6 +106,19 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    /**
+     * getAllPets is called in PetListActivity to populate a list of Pet's which will be used
+     * in the adapter, PetListAdapter.
+     *
+     * A readable database object is gotten.
+     * A Cursor object is created by querying the database table using the requisite table values.
+     * The cursor is used to get the values to populate Pet objects
+     * which then populate the petList.
+     *
+     * Remember to close the cursor and the database.
+     *
+     * @return an ArrayList of Pet objects.
+     */
     public ArrayList<Pet> getAllPets() {
         ArrayList<Pet> petList = new ArrayList<>();
         SQLiteDatabase database = this.getReadableDatabase();
